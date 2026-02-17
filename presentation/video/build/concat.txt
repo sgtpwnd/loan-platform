@@ -1,0 +1,5 @@
+file '/Users/lmva/Desktop/loan-platform/presentation/video/build/01-01-intro-short.mp4'
+file '/Users/lmva/Desktop/loan-platform/presentation/video/build/02-02-dashboard-short.mp4'
+file '/Users/lmva/Desktop/loan-platform/presentation/video/build/03-03-underwriting-short.mp4'
+file '/Users/lmva/Desktop/loan-platform/presentation/video/build/04-04-servicing-short.mp4'
+file '/Users/lmva/Desktop/loan-platform/presentation/video/build/05-05-tailored-short.mp4'

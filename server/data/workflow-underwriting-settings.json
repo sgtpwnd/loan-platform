@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "maxLtv": 0.75,
+    "maxLtc": 0.9,
+    "minCreditScore": 680,
+    "minLiquidityToLoanRatio": 0.1,
+    "acceptableLiquidityRatio": 2,
+    "excellentLiquidityRatio": 4,
+    "maxOtherMortgageLoans": 5,
+    "liquidityMonths": 6,
+    "assumedAnnualInterestRate": 0.12,
+    "prepaidInterestAnnualRate": 0.13,
+    "perDiemDayCountBasis": 360,
+    "originationFeePercent": 5,
+    "monthlyServiceFee": 950,
+    "documentPreparationFee": 250,
+    "closingCostEstimate": 6000,
+    "estimatedOtherLenderMonthlyPaymentFactor": 0.75,
+    "estimatedOtherLenderLoanFactor": 0.75,
+    "shortClosingTimelineDays": 14,
+    "declineCreditScore": 620,
+    "declineLtv": 0.82
+  }
+}

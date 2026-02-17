@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Loan Statement</title>
+    <style>
+      {{styles}}
+    </style>
+  </head>
+  <body>
+    <main class="statement">
+      <section class="header">
+        <div class="brand">
+          {{logoBlock}}
+          <div>
+            <div class="brand-title">Loan Statement</div>
+            <div class="meta">Prepared for {{borrowerName}}</div>
+          </div>
+        </div>
+        <div class="meta">
+          <div><strong>Statement Date</strong></div>
+          <div>{{statementDate}}</div>
+          <div style="margin-top: 8px;"><strong>Loan #</strong> {{loanNumber}}</div>
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <div class="card">
+          <h3>Borrower</h3>
+          <p>{{borrowerName}}</p>
+        </div>
+        <div class="card">
+          <h3>Loan Number</h3>
+          <p>{{loanNumber}}</p>
+        </div>
+      </section>
+
+      <section class="summary">
+        <div class="summary-item">
+          <span>Current Balance</span>
+          <strong>{{remainingBalance}}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Total Paid</span>
+          <strong>{{totalPaid}}</strong>
+        </div>
+        <div class="summary-item">
+          <span>Interest Paid</span>
+          <strong>{{interestPaid}}</strong>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">Payment History</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th class="amount">Amount</th>
+              <th class="amount">Principal</th>
+              <th class="amount">Interest</th>
+              <th class="amount">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{paymentRows}}
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <div class="section-title">Totals</div>
+        <div class="totals">
+          {{totalsRows}}
+        </div>
+      </section>
+
+      <section class="footer">
+        This statement is generated electronically and is valid without signature.
+      </section>
+    </main>
+  </body>
+</html>

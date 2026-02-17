@@ -1,0 +1,52 @@
+@theme {
+  --color-primary: #0f172a;
+  --color-accent: #2563eb;
+  --color-background: #f8fafc;
+  --color-card: #ffffff;
+  --color-foreground: #0f172a;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-muted: #f1f5f9;
+  --color-success: #16a34a;
+  --color-warning: #eab308;
+  --color-danger: #ef4444;
+  --color-info: #2563eb;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+p {
+  font-size: 16px;
+  font-weight: 400;
+}

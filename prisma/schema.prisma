@@ -1,0 +1,820 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum PadAchAccountType {
+  CHECKING
+  SAVINGS
+}
+
+enum PadAchAuthorizationStatus {
+  PENDING
+  APPROVED
+  REVOKED
+}
+
+enum ScheduledPaymentStatus {
+  SCHEDULED
+  PAID
+  FAILED
+  SKIPPED
+}
+
+enum ScheduledPaymentType {
+  INTEREST
+  EXTENSION_FEE
+  LATE_FEE
+}
+
+enum PadAchFileStatus {
+  DRAFT
+  CONFIRMED
+  SUBMITTED
+}
+
+enum PadAchEntryStatus {
+  INCLUDED
+  EXCLUDED
+  FLAGGED
+}
+
+enum PadAchPaymentType {
+  BORROWER_DEBIT
+  PRENOTE
+}
+
+enum PadAchSource {
+  BORROWER
+  LOAN
+}
+
+enum PadAchPrenoteStatus {
+  NOT_SENT
+  SENT
+  CLEARED
+  FAILED
+}
+
+enum ChargeType {
+  MONTHLY_PAYMENT
+}
+
+enum ChargePaymentMethod {
+  ACH
+}
+
+enum ChargeStatus {
+  PENDING
+  PAID
+  FAILED
+  VOID
+}
+
+model Profile {
+  // same id as Supabase auth.users.id (UUID)
+  id        String   @id @db.Uuid
+  email     String?  @unique
+  fullName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships           Membership[]
+  loans                 Loan[]        @relation("LoanCreatedBy")
+  underwritingDecisions Underwriting[] @relation("UnderwritingDecisionBy")
+  loanComments          LoanComment[]  @relation("LoanCommentAuthor")
+  loanCommunications    LoanCommunication[] @relation("LoanCommunicationSender")
+  integrations          IntegrationAccount[]
+  padAchFilesCreated    PadAchFile[]   @relation("PadAchCreatedBy")
+  padAchFilesSubmitted  PadAchFile[]   @relation("PadAchSubmittedBy")
+  auditLogs             AuditLog[]     @relation("AuditLogActor")
+}
+
+model Organization {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  loanRequestConfig Json?
+  esignRoles Json?
+  padAchConfig Json?
+
+  memberships Membership[]
+  borrowers   Borrower[]
+  borrowerPortalAccounts BorrowerPortalAccount[]
+  leads       Lead[]
+  integrations IntegrationAccount[]
+  loans       Loan[]
+  eSignatureTemplates ESignatureTemplate[]
+  esignTemplates Template[]
+  esignEnvelopes Envelope[]
+  padAchAuthorizations PadAchAuthorization[]
+  scheduledPayments ScheduledPayment[]
+  padAchFiles PadAchFile[]
+  padAchFileEntries PadAchFileEntry[]
+  auditLogs AuditLog[]
+}
+
+model Membership {
+  id             String       @id @default(uuid()) @db.Uuid
+  role           OrgRole      @default(ADMIN)
+  createdAt      DateTime     @default(now())
+
+  organizationId String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  profileId      String       @db.Uuid
+  profile        Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, profileId])
+  @@index([profileId])
+  @@index([organizationId])
+}
+
+model Borrower {
+  id             String       @id @default(uuid()) @db.Uuid
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organizationId String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // PII fields (you said you need borrower info)
+  name           String
+  guarantorName  String?
+  email          String?
+  phone          String?
+  address        String?
+  llcName        String?
+  firstName      String?
+  middleName     String?
+  lastName       String?
+  cellPhone      String?
+  workPhone      String?
+  dateOfBirth    String?
+  maritalStatus  String?
+  ssnEncrypted   String?
+  streetAddress  String?
+  city           String?
+  state          String?
+  postalCode     String?
+  mailingStreetAddress String?
+  mailingCity    String?
+  mailingState   String?
+  mailingPostalCode String?
+  paymentMethodPreference String?
+  bankName       String?
+  achAccountName String?
+  achAccountType String?
+  achRoutingEncrypted String?
+  achAccountEncrypted String?
+  achAuthorizationPrintedName String?
+  achAuthorizationSignature String?
+  achAuthorizationDate String?
+  achPrenoteStatus PadAchPrenoteStatus @default(NOT_SENT)
+  achPrenoteSentAt DateTime?
+  achPrenoteClearedAt DateTime?
+  achPrenoteFailedAt DateTime?
+  businessAddress String?
+  timeAtResidence String?
+  emergencyContacts Json?
+  padAchAuthorizations PadAchAuthorization[]
+  scheduledPayments ScheduledPayment[]
+  padAchFileEntries PadAchFileEntry[]
+
+  loans          Loan[]
+  portalAccounts BorrowerPortalAccount[]
+
+  @@index([organizationId])
+}
+
+model Loan {
+  id              String     @id @default(uuid()) @db.Uuid
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  organizationId  String     @db.Uuid
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  borrowerId      String     @db.Uuid
+  borrower        Borrower   @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+
+  // who created the record (your logged-in user)
+  createdById     String?    @db.Uuid
+  createdBy       Profile?   @relation("LoanCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  amount          Int
+  monthlyPaymentAmount Int @default(0)
+  propertyAddress String
+  status          LoanStatus @default(NEW)
+  targetClosingDate DateTime?
+  fundedDate      DateTime?
+  maturityDate    DateTime?
+  loanOfficerEmail String?
+  guarantorName   String?
+  closingAgent    String?
+  interestRate    String?
+  loanTerm        String?
+  originationFee  String?
+  interestReserveRemainingCents Int @default(0)
+  achOverrideEnabled Boolean @default(false)
+  bankName       String?
+  achAccountName String?
+  achAccountType String?
+  achRoutingEncrypted String?
+  achAccountEncrypted String?
+  achAuthorizationPrintedName String?
+  achAuthorizationSignature String?
+  achAuthorizationDate String?
+  achPrenoteStatus PadAchPrenoteStatus @default(NOT_SENT)
+  achPrenoteSentAt DateTime?
+  achPrenoteClearedAt DateTime?
+  achPrenoteFailedAt DateTime?
+  insuranceExpirationDate DateTime?
+  insuranceDeclarationDocs Json?
+  insurancePaymentProofDocs Json?
+  payoffData     Json?
+  fundingData    Json?
+  statusHistory  Json?
+
+  underwriting    Underwriting?
+  comments        LoanComment[]
+  communications  LoanCommunication[]
+  intake          LoanIntake?
+  leads           Lead[]
+  termSheetRequests TermSheetSignatureRequest[]
+  esignEnvelopes Envelope[]
+  padAchAuthorizations PadAchAuthorization[]
+  scheduledPayments ScheduledPayment[]
+  padAchFileEntries PadAchFileEntry[]
+  charges        Charge[]
+
+  @@index([organizationId])
+  @@index([borrowerId])
+  @@index([createdById])
+}
+
+model PadAchAuthorization {
+  id                String   @id @default(uuid()) @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId    String       @db.Uuid
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  borrowerId        String       @db.Uuid
+  borrower          Borrower     @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+
+  loanId            String?      @db.Uuid
+  loan              Loan?        @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  accountHolderName String
+  bankName          String
+  routingNumber     String
+  accountNumber     String
+  accountType       PadAchAccountType
+  authorizationDate DateTime
+  authorizationStatus PadAchAuthorizationStatus @default(PENDING)
+  active            Boolean      @default(true)
+
+  @@unique([loanId])
+  @@index([organizationId])
+  @@index([borrowerId])
+}
+
+model ScheduledPayment {
+  id                String   @id @default(uuid()) @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId    String       @db.Uuid
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  borrowerId        String       @db.Uuid
+  borrower          Borrower     @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+
+  loanId            String       @db.Uuid
+  loan              Loan         @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  dueDate           DateTime
+  amount            Int
+  paymentType       ScheduledPaymentType @default(INTEREST)
+  status            ScheduledPaymentStatus @default(SCHEDULED)
+  holdbackActive    Boolean      @default(false)
+  nsfFlag           Boolean      @default(false)
+  manualExclude     Boolean      @default(false)
+  notes             String?
+
+  padAchEntries     PadAchFileEntry[]
+
+  @@index([organizationId])
+  @@index([borrowerId])
+  @@index([loanId])
+  @@index([dueDate])
+}
+
+model Charge {
+  id            String   @id @default(uuid()) @db.Uuid
+  createdAt     DateTime @default(now())
+
+  loanId        String   @db.Uuid
+  loan          Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  chargeType    ChargeType
+  amount        Int
+  paymentMethod ChargePaymentMethod
+  dueDate       DateTime
+  status        ChargeStatus @default(PENDING)
+
+  @@unique([loanId, chargeType, dueDate])
+  @@index([loanId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model PadAchFile {
+  id                String   @id @default(uuid()) @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId    String       @db.Uuid
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdById       String?      @db.Uuid
+  createdBy         Profile?     @relation("PadAchCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  status            PadAchFileStatus @default(DRAFT)
+  paymentType       PadAchPaymentType @default(BORROWER_DEBIT)
+  fromDate          DateTime
+  toDate            DateTime
+  effectiveDate     DateTime
+  fileReference     String
+  batchNumber       Int
+  entryCount        Int @default(0)
+  entryHash         Int @default(0)
+  totalDebit        Int @default(0)
+  totalCredit       Int @default(0)
+  achText           String?
+  submittedAt       DateTime?
+  submittedById     String? @db.Uuid
+  submittedBy       Profile? @relation("PadAchSubmittedBy", fields: [submittedById], references: [id], onDelete: SetNull)
+
+  entries           PadAchFileEntry[]
+
+  @@index([organizationId])
+  @@index([status])
+}
+
+model PadAchFileEntry {
+  id                String   @id @default(uuid()) @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId    String       @db.Uuid
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  padAchFileId      String       @db.Uuid
+  padAchFile        PadAchFile   @relation(fields: [padAchFileId], references: [id], onDelete: Cascade)
+
+  scheduledPaymentId String      @db.Uuid
+  scheduledPayment  ScheduledPayment @relation(fields: [scheduledPaymentId], references: [id], onDelete: Cascade)
+
+  borrowerId        String       @db.Uuid
+  borrower          Borrower     @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+
+  loanId            String       @db.Uuid
+  loan              Loan         @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  amount            Int
+  paymentDate       DateTime
+  status            PadAchEntryStatus @default(INCLUDED)
+  flags             Json?
+  include           Boolean      @default(true)
+  overrideAmount    Int?
+  overridePaymentDate DateTime?
+  additionalCharges Json?
+  manualExclude     Boolean      @default(false)
+  achSource         PadAchSource?
+  accountHolderName String?
+  bankName          String?
+  routingNumber     String?
+  accountNumber     String?
+  accountType       PadAchAccountType?
+  authorizationDate String?
+  prenoteStatus     PadAchPrenoteStatus?
+  reserveAppliedCents Int?
+
+  @@unique([padAchFileId, scheduledPaymentId])
+  @@index([organizationId])
+  @@index([loanId])
+}
+
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+
+  organizationId String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  actorId        String? @db.Uuid
+  actor          Profile? @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  action         String
+  entityType     String
+  entityId       String?
+  meta           Json?
+
+  @@index([organizationId])
+  @@index([entityType])
+}
+
+model TermSheetSignatureRequest {
+  id            String   @id @default(uuid()) @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  loanId        String   @db.Uuid
+  loan          Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  status        TermSheetSignatureStatus @default(PENDING)
+  termSheetUrl  String
+  templateHtml  String?
+  signers       Json?
+  currentSignerIndex Int?
+  signedPdfUrl  String?
+  signerName    String?
+  signerEmail   String?
+  signatureText String?
+  consentText   String?
+  comment       String?
+  signedAt      DateTime?
+  declinedAt    DateTime?
+
+  @@index([loanId])
+}
+
+model BorrowerPortalAccount {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organizationId String   @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  borrowerId     String   @db.Uuid
+  borrower       Borrower @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+
+  authUserId     String   @unique
+  email          String?
+
+  @@index([organizationId])
+  @@index([borrowerId])
+}
+
+model Lead {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+
+  organizationId String   @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  loanId         String?  @db.Uuid
+  loan           Loan?    @relation(fields: [loanId], references: [id], onDelete: SetNull)
+
+  source         String
+  externalId     String?
+  firstName      String
+  lastName       String
+  email          String?
+  phone          String?
+  propertyAddress String?
+  rawData        Json?
+
+  @@index([organizationId])
+  @@index([loanId])
+  @@unique([organizationId, externalId])
+}
+
+model ESignatureTemplate {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organizationId String   @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name           String
+  fileUrl        String
+  fields         Json?
+  signers        Json?
+
+  @@index([organizationId])
+}
+
+enum EsignEnvelopeStatus {
+  DRAFT
+  SENT
+  COMPLETED
+  VOIDED
+}
+
+enum EsignRecipientStatus {
+  PENDING
+  SENT
+  VIEWED
+  SIGNED
+}
+
+enum EsignFieldType {
+  SIGNATURE
+  DATE_SIGNED
+  TEXT
+  CHECKBOX
+  INITIALS
+}
+
+enum EsignAuditEventType {
+  CREATED
+  SENT
+  REMINDER_SENT
+  VIEWED
+  SIGNED
+  COMPLETED
+  VOIDED
+  FIELD_UPDATED
+}
+
+model Template {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organizationId String   @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name           String
+  description    String?
+  fileUrl        String
+  pageCount      Int?
+  roles          Json?
+
+  fields         Field[]
+  envelopes      Envelope[]
+
+  @@index([organizationId])
+}
+
+model Envelope {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organizationId String   @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  templateId     String   @db.Uuid
+  template       Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  loanId         String?  @db.Uuid
+  loan           Loan?    @relation(fields: [loanId], references: [id], onDelete: SetNull)
+
+  status         EsignEnvelopeStatus @default(DRAFT)
+  subject        String?
+  message        String?
+  lockedAt       DateTime?
+  completedAt    DateTime?
+  finalPdfUrl    String?
+
+  recipients     Recipient[]
+  fields         Field[]
+  auditEvents    AuditEvent[]
+
+  @@index([organizationId])
+  @@index([templateId])
+  @@index([loanId])
+}
+
+model Recipient {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  envelopeId     String   @db.Uuid
+  envelope       Envelope @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
+
+  role           String
+  name           String
+  email          String
+  signingOrder   Int
+  status         EsignRecipientStatus @default(PENDING)
+  signedAt       DateTime?
+  lastSentAt     DateTime?
+  sentCount      Int      @default(0)
+  accessToken    String   @unique
+
+  @@index([envelopeId])
+  @@index([email])
+}
+
+model Field {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  templateId     String?  @db.Uuid
+  template       Template? @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  envelopeId     String?  @db.Uuid
+  envelope       Envelope? @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
+
+  role           String
+  type           EsignFieldType
+  label          String?
+  page           Int
+  x              Float
+  y              Float
+  width          Float
+  height         Float
+  required       Boolean @default(true)
+  readOnly       Boolean @default(false)
+
+  value          String?
+  signedAt       DateTime?
+
+  @@index([templateId])
+  @@index([envelopeId])
+}
+
+model AuditEvent {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+
+  envelopeId     String   @db.Uuid
+  envelope       Envelope @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
+
+  type           EsignAuditEventType
+  actorRole      String?
+  actorEmail     String?
+  ipAddress      String?
+  userAgent      String?
+  payload        Json?
+
+  @@index([envelopeId])
+  @@index([type])
+}
+
+model IntegrationAccount {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organizationId String   @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  profileId      String?  @db.Uuid
+  profile        Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  provider       String
+  accessToken    String
+  refreshToken   String?
+  expiresAt      DateTime?
+  scope          String?
+  email          String?
+  labelName      String?
+  labelId        String?
+
+  @@index([organizationId])
+  @@index([profileId])
+  @@unique([organizationId, provider])
+}
+
+model Underwriting {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  refreshedAt DateTime?
+
+  loanId      String   @unique @db.Uuid
+  loan        Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  // Normalized fields from APIs (auto), plus manual overrides in a second JSON.
+  autoData    Json
+  manualData  Json
+  rawSources  Json
+
+  decision    UnderwritingDecision?
+  decisionComment String?
+  decisionAt  DateTime?
+  decisionById String? @db.Uuid
+  decisionBy  Profile? @relation("UnderwritingDecisionBy", fields: [decisionById], references: [id], onDelete: SetNull)
+
+  comments  LoanComment[] @relation("UnderwritingComments")
+}
+
+model LoanComment {
+  id             String   @id @default(uuid()) @db.Uuid
+  createdAt      DateTime @default(now())
+  body           String
+
+  loanId         String   @db.Uuid
+  loan           Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  underwritingId String?  @db.Uuid
+  underwriting   Underwriting? @relation("UnderwritingComments", fields: [underwritingId], references: [id], onDelete: Cascade)
+
+  authorId       String?  @db.Uuid
+  author         Profile? @relation("LoanCommentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model LoanCommunication {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  channel   String
+  subject   String?
+  body      String
+  toEmail   String?
+  ccEmail   String?
+
+  loanId    String   @db.Uuid
+  loan      Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  senderId  String?  @db.Uuid
+  sender    Profile? @relation("LoanCommunicationSender", fields: [senderId], references: [id], onDelete: SetNull)
+}
+
+model LoanIntake {
+  id                 String   @id @default(uuid()) @db.Uuid
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  loanId             String   @unique @db.Uuid
+  loan               Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  preCloserEmail     String?
+  closerName         String?
+  closerEmail        String?
+  totalLiquidity     String?
+  creditScore        String?
+  propertyAddress    String?
+  beds               String?
+  baths              String?
+  purchasePrice      String?
+  arv                String?
+  llcState           String?
+  targetClosingDate  String?
+  closingCompany     String?
+  preCloserName      String?
+  rehabBudget        String?
+  totalLoanAmount    String?
+  ltvPercentage      String?
+  borrowerName       String?
+  llcName            String?
+  ninety8Status      String?
+  ssnEncrypted       String?
+  propertyMediaLink  String?
+  referrerName       String?
+  referrerEmail      String?
+  referrerPhone      String?
+  guarantorName      String?
+  closingAgent       String?
+  interestRate       String?
+  loanTerm           String?
+  originationFee     String?
+  pastProjects       String?
+  pastProjectPhotos  String?
+  loanRequestData    Json?
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum UnderwritingDecision {
+  APPROVED
+  DENIED
+  PENDING
+}
+
+enum LoanStatus {
+  NEW
+  PRE_APPROVED
+  IN_REVIEW
+  APPROVED
+  CLOSING
+  FUNDED
+  DENIED
+}
+
+enum TermSheetSignatureStatus {
+  PENDING
+  SIGNED
+  DECLINED
+}

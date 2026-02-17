@@ -1,0 +1,341 @@
+{
+  "applications": [
+    {
+      "id": "LA-2026-1545",
+      "borrowerName": "Mary Dane",
+      "borrowerEmail": "mary.dane@email.com",
+      "property": "3108 Benjestown Road, Memphis, Tennessee 38127",
+      "type": "Fix & Flip Loan (Rehab Loan)",
+      "amount": 100000,
+      "currentStageIndex": 3,
+      "createdAt": 1771113405841,
+      "lastEventAt": 1771344432744,
+      "history": [
+        "APPLICATION_SUBMITTED",
+        "UNDERWRITING_STARTED",
+        "UNDERWRITING_SUBMITTED_FOR_REVIEW"
+      ],
+      "preApprovalDecision": "PRE_APPROVE",
+      "decisionNotes": null,
+      "purchaseDetails": {
+        "purchasePrice": "85000",
+        "rehabBudget": "25000",
+        "arv": "150000",
+        "exitStrategy": "Fix and Flip",
+        "targetClosingDate": "2026-03-30"
+      },
+      "borrowerProfile": {
+        "firstName": "Mary",
+        "middleName": "",
+        "lastName": "Dane",
+        "llcName": "MC Capital Ventures LLC",
+        "email": "mary.dane@email.com",
+        "homePhone": "",
+        "workPhone": "",
+        "mobilePhone": "(512) 555-0142",
+        "dateOfBirth": "",
+        "socialSecurityNumber": "",
+        "civilStatus": "",
+        "presentAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "timeAtResidence": "",
+        "mailingSameAsPresent": true,
+        "mailingAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "noBusinessAddress": false,
+        "businessAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "emergencyContacts": [
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          }
+        ],
+        "guarantors": [],
+        "guarantorContacts": [],
+        "liquidityProofDocs": []
+      },
+      "borrowerAccess": {
+        "status": "NOT_CREATED",
+        "email": "mary.dane@email.com",
+        "invitedAt": 1771344432744,
+        "createdAt": null,
+        "profileCompletedAt": null
+      },
+      "llcName": "MC Capital Ventures LLC",
+      "llcStateRecorded": "",
+      "llcSameAsOnFile": true,
+      "llcDocs": [],
+      "conditionsForm": null,
+      "valuationInputTrail": [],
+      "underwritingIntake": {
+        "status": "PENDING",
+        "requestedAt": 1771344423659,
+        "submittedAt": null,
+        "notificationSentAt": 1771344423659,
+        "formData": null,
+        "submissionHistory": []
+      },
+      "underwritingSummary": null,
+      "communications": [
+        {
+          "id": "1771344423659-e17a10",
+          "threadId": "thr-1771344423659-152675",
+          "from": "LENDER",
+          "channel": "PORTAL",
+          "type": "REQUEST_INFO",
+          "subject": "Create borrower access: LA-2026-1545 - 3108 Benjestown Road, Memphis, Tennessee 38127",
+          "message": "Your request was pre-approved.\nComplete your borrower information form first, then create your borrower portal login and submit underwriting continuation.\nCreate access link: http://localhost:5173/borrower/applications?loanId=LA-2026-1545&createAccess=1&continue=1",
+          "attachments": [],
+          "createdAt": 1771344423659,
+          "readByBorrower": false
+        },
+        {
+          "id": "1771344425134-1949b1",
+          "threadId": "thr-1771344425134-24c1c7",
+          "from": "LENDER",
+          "channel": "PORTAL",
+          "type": "REQUEST_INFO",
+          "subject": "Create borrower access: LA-2026-1545 - 3108 Benjestown Road, Memphis, Tennessee 38127",
+          "message": "Your request was pre-approved.\nComplete your borrower information form first, then create your borrower portal login and submit underwriting continuation.\nCreate access link: http://localhost:5173/borrower/applications?loanId=LA-2026-1545&createAccess=1&continue=1",
+          "attachments": [],
+          "createdAt": 1771344425135,
+          "readByBorrower": false
+        },
+        {
+          "id": "1771344432744-ba6759",
+          "threadId": "thr-1771344432744-6d4df4",
+          "from": "LENDER",
+          "channel": "PORTAL",
+          "type": "REQUEST_INFO",
+          "subject": "Create borrower access: LA-2026-1545 - 3108 Benjestown Road, Memphis, Tennessee 38127",
+          "message": "Your request was pre-approved.\nComplete your borrower information form first, then create your borrower portal login and submit underwriting continuation.\nCreate access link: http://localhost:5173/borrower/applications?loanId=LA-2026-1545&createAccess=1&continue=1",
+          "attachments": [],
+          "createdAt": 1771344432744,
+          "readByBorrower": false
+        }
+      ],
+      "lenderComments": []
+    },
+    {
+      "id": "LA-2024-1501",
+      "borrowerName": "Michael Chen",
+      "borrowerEmail": "michael.chen@email.com",
+      "property": "123 Main St, Austin, TX",
+      "type": "Purchase",
+      "amount": 450000,
+      "currentStageIndex": 5,
+      "createdAt": 1736985600000,
+      "lastEventAt": 1739664000000,
+      "history": [
+        "APPLICATION_SUBMITTED",
+        "DOCUMENTS_VERIFIED",
+        "PROCESSING_COMPLETED",
+        "UNDERWRITING_APPROVED",
+        "FUNDING_COMPLETED"
+      ],
+      "preApprovalDecision": "PRE_APPROVE",
+      "decisionNotes": null,
+      "purchaseDetails": null,
+      "borrowerProfile": {
+        "firstName": "Michael",
+        "middleName": "",
+        "lastName": "Chen",
+        "llcName": "MC Capital Ventures LLC",
+        "email": "michael.chen@email.com",
+        "homePhone": "",
+        "workPhone": "",
+        "mobilePhone": "(512) 555-0142",
+        "dateOfBirth": "",
+        "socialSecurityNumber": "",
+        "civilStatus": "",
+        "presentAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "timeAtResidence": "",
+        "mailingSameAsPresent": true,
+        "mailingAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "noBusinessAddress": false,
+        "businessAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "emergencyContacts": [
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          }
+        ],
+        "guarantors": [],
+        "guarantorContacts": [],
+        "liquidityProofDocs": []
+      },
+      "borrowerAccess": {
+        "status": "NOT_CREATED",
+        "email": "michael.chen@email.com",
+        "invitedAt": null,
+        "createdAt": null,
+        "profileCompletedAt": null
+      },
+      "llcName": "MC Capital Ventures LLC",
+      "llcStateRecorded": "",
+      "llcSameAsOnFile": true,
+      "llcDocs": [],
+      "conditionsForm": null,
+      "valuationInputTrail": [],
+      "underwritingIntake": {
+        "status": "LOCKED",
+        "requestedAt": null,
+        "submittedAt": null,
+        "notificationSentAt": null,
+        "formData": null,
+        "submissionHistory": []
+      },
+      "underwritingSummary": null,
+      "communications": [],
+      "lenderComments": []
+    },
+    {
+      "id": "LA-2024-1502",
+      "borrowerName": "Alex Patel",
+      "borrowerEmail": "alex.patel@email.com",
+      "property": "456 Oak Ave, Dallas, TX",
+      "type": "Refinance",
+      "amount": 285000,
+      "currentStageIndex": 4,
+      "createdAt": 1734393600000,
+      "lastEventAt": 1737081600000,
+      "history": [
+        "APPLICATION_SUBMITTED",
+        "DOCUMENTS_VERIFIED",
+        "PROCESSING_COMPLETED",
+        "UNDERWRITING_APPROVED"
+      ],
+      "preApprovalDecision": "REQUEST_INFO",
+      "decisionNotes": "Need updated appraisal",
+      "purchaseDetails": null,
+      "borrowerProfile": {
+        "firstName": "Alex",
+        "middleName": "",
+        "lastName": "Patel",
+        "llcName": "MC Capital Ventures LLC",
+        "email": "alex.patel@email.com",
+        "homePhone": "",
+        "workPhone": "",
+        "mobilePhone": "(512) 555-0142",
+        "dateOfBirth": "",
+        "socialSecurityNumber": "",
+        "civilStatus": "",
+        "presentAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "timeAtResidence": "",
+        "mailingSameAsPresent": true,
+        "mailingAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "noBusinessAddress": false,
+        "businessAddress": {
+          "street": "",
+          "city": "",
+          "state": "",
+          "zip": ""
+        },
+        "emergencyContacts": [
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "email": "",
+            "phone": ""
+          }
+        ],
+        "guarantors": [],
+        "guarantorContacts": [],
+        "liquidityProofDocs": []
+      },
+      "borrowerAccess": {
+        "status": "NOT_CREATED",
+        "email": "alex.patel@email.com",
+        "invitedAt": null,
+        "createdAt": null,
+        "profileCompletedAt": null
+      },
+      "llcName": "MC Capital Ventures LLC",
+      "llcStateRecorded": "",
+      "llcSameAsOnFile": true,
+      "llcDocs": [],
+      "conditionsForm": null,
+      "valuationInputTrail": [],
+      "underwritingIntake": {
+        "status": "LOCKED",
+        "requestedAt": null,
+        "submittedAt": null,
+        "notificationSentAt": null,
+        "formData": null,
+        "submissionHistory": []
+      },
+      "underwritingSummary": null,
+      "communications": [],
+      "lenderComments": []
+    }
+  ]
+}
