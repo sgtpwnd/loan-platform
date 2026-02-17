@@ -44,3 +44,11 @@ next-env.d.ts
 
 
 
+
+# Ignore large local binaries/backups
+.tools/
+*.tar.gz
+
+# Local tools + backups
+.tools/
+*.tar.gz
